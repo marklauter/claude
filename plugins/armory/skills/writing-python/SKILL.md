@@ -80,7 +80,7 @@ This style captures most of the correctness benefit of pure FP while staying ins
 ## Testing
 
 - `pytest` as the test runner. Plain `assert` with rewriting gives rich diffs.
-- Tests live under `tests/` and mirror the package layout: `src/hoplite/parser.py` pairs with `tests/test_parser.py`.
+- Tests live under `tests/` and mirror the package layout: `src/armory/parser.py` pairs with `tests/test_parser.py`.
 - Fixtures via `@pytest.fixture`, requested by parameter name. Scope chosen by lifetime — function, module, session.
 - `@pytest.mark.parametrize` for table-driven tests.
 - `pytest-asyncio` for async tests with `asyncio_mode = "auto"` in `[tool.pytest.ini_options]`, so `async def test_*` runs without per-test decoration.

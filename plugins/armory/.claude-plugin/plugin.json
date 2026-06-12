@@ -1,7 +1,7 @@
 {
   "name": "armory",
   "version": "1.0.0",
-  "description": "MSL Armory — agent-facing skills plus the Hoplite knowledge graph",
+  "description": "MSL Armory — agent-facing writing and reviewing skills",
   "author": {
     "name": "MSL"
   },
@@ -11,14 +11,6 @@
     "skills",
     "csharp",
     "documentation",
-    "notes",
-    "journaling",
     "review"
-  ],
-  "mcpServers": {
-    "hoplite": {
-      "command": "python3",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/launch.py"]
-    }
-  }
+  ]
 }

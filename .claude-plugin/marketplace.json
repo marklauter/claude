@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "armory",
-      "description": "MSL Armory — agent-facing skills plus the Hoplite knowledge graph",
+      "description": "MSL Armory — agent-facing writing and reviewing skills",
       "author": {
         "name": "MSL"
       },
