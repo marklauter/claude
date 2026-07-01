@@ -5,9 +5,16 @@
 
 # MSL Armory
 
-A Claude Code marketplace shipping one plugin, `armory` — agent-facing writing and reviewing skills.
+A Claude Code marketplace (`msl-armory`) shipping several small, single-concern plugins of agent-facing skills. Each plugin is one coherent family; install only the ones your repo needs.
 
 The Hoplite knowledge graph (MCP server plus its note-taking and journaling skills) lives in its own repo now: [marklauter/hoplite](https://github.com/marklauter/hoplite).
+
+## Plugins
+
+- `documentation` — writing and reviewing markdown prose and project wikis.
+- `csharp` — writing and reviewing C# / .NET.
+- `python` — writing Python.
+- `workflow` — findings triage and GitHub issue management.
 
 ## Install
 
@@ -15,56 +22,36 @@ From inside Claude Code, with `<repo>` as the absolute path to your clone (the d
 
 ```text
 /plugin marketplace add <repo>
-/plugin install armory@msl.armory
+/plugin install documentation@msl-armory
+/plugin install csharp@msl-armory
 ```
 
-After source changes, run `/plugin uninstall armory@msl.armory` followed by `/plugin install armory@msl.armory` to refresh the cached SKILL.md and components.
-
-## What you get
-
-Writing skills:
-
-- `writing-prose` — editorial foundation for markdown artifacts: rhetorical context, density, structure, formatting.
-- `writing-wiki` — software-project wikis; sections own audience and tone, pages inherit. Loads alongside `writing-prose`.
-- `writing-csharp` — C#/.NET idioms: type-driven design, immutability, Result-type error handling.
-- `writing-python` — pragmatic-functional Python: frozen dataclasses, pattern matching, Protocol-based typing, modern tooling.
-
-Reviewing skills:
-
-- `reviewing-prose` — review local markdown diffs; findings classified by severity and lens under `.findings/`.
-- `reviewing-wiki` — same shape, scoped to wiki corpora; self-contained rubric.
-- `reviewing-csharp` — review local C# diffs; findings under `.findings/`.
-- `triaging-findings` — walk the `.findings/` queue and decide disposition: fix, file, drop, or defer.
-- `managing-github-issues` — list, search, dedupe, file, triage, label, close.
-
-## Quick start
-
-1. Make some edits to markdown or C# in a git working tree.
-2. Ask the agent to review the diff — it loads the matching reviewing skill and writes one file per finding under `.findings/`.
-3. Ask the agent to triage — `triaging-findings` walks the queue in severity order and dispositions each finding.
+Install each plugin you want by name — `<plugin>@msl-armory`. After source changes, run `/plugin uninstall <plugin>@msl-armory` followed by `/plugin install <plugin>@msl-armory` to refresh the cached `SKILL.md` and components.
 
 ## Development
 
-Layout:
+Layout — each plugin is self-contained under `plugins/<plugin>/`:
 
-- `plugins/armory/skills/` — skill bodies. One subdirectory per skill, each with a `SKILL.md`.
-- `plugins/armory/components/` — composable markdown fragments injected into skill bodies via shell expansion.
-- `plugins/armory/scripts/` — shared bash scripts (finding readers and writers).
-- `plugins/armory/tests/` — bash test runner and tests for the shared scripts.
+- `plugins/<plugin>/.claude-plugin/plugin.json` — the plugin manifest.
+- `plugins/<plugin>/skills/<skill>/SKILL.md` — skill bodies, one subdirectory per skill.
+- `plugins/<plugin>/skills/<skill>/scripts/` — scripts owned by that skill.
+- `plugins/<plugin>/components/` — markdown fragments for that plugin's skills.
 
-Running tests:
+Plugins carry no build step and share nothing across plugin boundaries: a skill inlines its own discipline and references shared canonical docs by plain path.
+
+Running the workflow plugin's tests:
 
 ```bash
-bash plugins/armory/tests/run-tests.sh
+bash plugins/workflow/tests/run-tests.sh
 ```
 
-Adding a skill: create `plugins/armory/skills/<skill-name>/SKILL.md`, then `/plugin uninstall` + `/plugin install` to refresh the cache.
+Adding a skill: create `plugins/<plugin>/skills/<skill-name>/SKILL.md`, then `/plugin uninstall` + `/plugin install` to refresh the cache.
 
 ## Troubleshooting
 
-Claude Code's cache of SKILL.md and `components/` only refreshes on `/plugin install`. If the agent loads stale skill prose after a source change, run:
+Claude Code's cache of `SKILL.md` and `components/` only refreshes on `/plugin install`. If the agent loads stale skill prose after a source change, run:
 
 ```text
-/plugin uninstall armory@msl.armory
-/plugin install armory@msl.armory
+/plugin uninstall <plugin>@msl-armory
+/plugin install <plugin>@msl-armory
 ```

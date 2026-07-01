@@ -1,0 +1,17 @@
+{
+  "name": "workflow",
+  "version": "0.1.0",
+  "description": "Development workflow skills — findings triage and GitHub issue management",
+  "author": {
+    "name": "MSL"
+  },
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "skills",
+    "workflow",
+    "triage",
+    "github",
+    "issues"
+  ]
+}

@@ -1,19 +1,46 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "msl.armory",
+  "name": "msl-armory",
   "description": "A collection of skills",
   "owner": {
     "name": "MSL"
   },
   "plugins": [
     {
-      "name": "armory",
-      "description": "MSL Armory — agent-facing writing and reviewing skills",
+      "name": "documentation",
+      "description": "Writing and reviewing skills for markdown documentation — prose and project wikis",
       "author": {
         "name": "MSL"
       },
       "category": "productivity",
-      "source": "./plugins/armory"
+      "source": "./plugins/documentation"
+    },
+    {
+      "name": "csharp",
+      "description": "Writing and reviewing skills for C# / .NET",
+      "author": {
+        "name": "MSL"
+      },
+      "category": "productivity",
+      "source": "./plugins/csharp"
+    },
+    {
+      "name": "python",
+      "description": "Writing skills for Python",
+      "author": {
+        "name": "MSL"
+      },
+      "category": "productivity",
+      "source": "./plugins/python"
+    },
+    {
+      "name": "workflow",
+      "description": "Development workflow skills — findings triage and GitHub issue management",
+      "author": {
+        "name": "MSL"
+      },
+      "category": "productivity",
+      "source": "./plugins/workflow"
     }
   ]
 }

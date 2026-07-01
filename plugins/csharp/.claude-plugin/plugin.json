@@ -1,0 +1,16 @@
+{
+  "name": "csharp",
+  "version": "0.1.0",
+  "description": "Writing and reviewing skills for C# / .NET — type-driven design, immutability, Result-based error handling",
+  "author": {
+    "name": "MSL"
+  },
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "skills",
+    "csharp",
+    "dotnet",
+    "review"
+  ]
+}
