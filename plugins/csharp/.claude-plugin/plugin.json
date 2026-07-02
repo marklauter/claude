@@ -1,7 +1,7 @@
 {
   "name": "csharp",
   "version": "0.1.0",
-  "description": "Writing and reviewing skills for C# / .NET — type-driven design, immutability, Result-based error handling",
+  "description": "Skills for writing and reviewing C# / .NET — type-driven design, immutability, Result-based error handling",
   "author": {
     "name": "MSL"
   },

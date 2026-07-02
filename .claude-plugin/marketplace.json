@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "documentation",
-      "description": "Writing and reviewing skills for markdown documentation — prose and project wikis",
+      "description": "Skills for writing and reviewing markdown documentation — prose and project wikis",
       "author": {
         "name": "MSL"
       },
@@ -17,7 +17,7 @@
     },
     {
       "name": "csharp",
-      "description": "Writing and reviewing skills for C# / .NET",
+      "description": "Skills for writing and reviewing C# / .NET — type-driven design, immutability, Result-based error handling",
       "author": {
         "name": "MSL"
       },
@@ -26,7 +26,7 @@
     },
     {
       "name": "python",
-      "description": "Writing skills for Python",
+      "description": "Skills for writing Python — pragmatic-functional style, frozen dataclasses, pattern matching, Protocol typing",
       "author": {
         "name": "MSL"
       },
@@ -35,7 +35,7 @@
     },
     {
       "name": "workflow",
-      "description": "Development workflow skills — findings triage and GitHub issue management",
+      "description": "Skills for development workflow — findings triage and GitHub issue management",
       "author": {
         "name": "MSL"
       },

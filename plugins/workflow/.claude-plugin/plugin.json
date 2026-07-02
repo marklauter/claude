@@ -1,7 +1,7 @@
 {
   "name": "workflow",
   "version": "0.1.0",
-  "description": "Development workflow skills — findings triage and GitHub issue management",
+  "description": "Skills for development workflow — findings triage and GitHub issue management",
   "author": {
     "name": "MSL"
   },
