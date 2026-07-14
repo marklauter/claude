@@ -49,7 +49,17 @@ Validate with the canonical script at `${CLAUDE_PLUGIN_ROOT}/skills/writing-csha
 
 Each target is anything `dotnet` accepts — project name, `.csproj`, or `.slnx`.
 
-When a gate fires, fix the cause. Suppression is a last resort, pushed as close to the code as possible — `#pragma warning disable`/`restore` around the lines, else `[SuppressMessage(..., Justification="...")]` on the member, else `<NoWarn>` in `.csproj`, else `Directory.Build.props`. Every suppression carries a justification; `<NoWarn>` carries a `<!-- code desc : why -->` comment per code. Errors need a ticket on top of the justification. To clear a format violation, run a *scoped* `dotnet format` (`--diagnostics <ID> --include <path>`, or a `whitespace`/`style`/`analyzers` subcommand) — never bare `dotnet format`. Exclude from coverage only generated or trivial code, with a comment naming why; hand-written logic is tested.
+When a gate fires, fix the cause; suppression is the last resort (see below). To clear a format violation, run a *scoped* `dotnet format` (`--diagnostics <ID> --include <path>`, or a `whitespace`/`style`/`analyzers` subcommand) — never bare `dotnet format`. Exclude from coverage only generated or trivial code, with a comment naming why; hand-written logic is tested.
+
+## Suppression
+
+When to suppress: only as a last resort, after fixing the cause fails and the diagnostic is a genuine false positive or a deliberate, justified deviation from a rule — never to quiet a real defect. Every suppression states why in its `Justification` or comment; an error, not merely a warning, carries a tracking ticket on top of the justification.
+
+How to suppress — reach for the narrowest, most structured mechanism the suppression's true scope allows:
+
+- One member or type → the attribute. `[SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "…")]` on the declaration the diagnostic fires on. First choice: scoped to a single site and self-documenting.
+- A rule that fights a codebase-wide convention → `<NoWarn>`, at the narrowest level matching its scope. Append to `$(NoWarn)` (never overwrite it), one `<!-- CODE short-desc : why -->` comment per code. Gate test-only carve-outs behind the test-project `Condition` so a test suppression never loosens production. A project-specific suppression stays in that project's `.csproj` or its `GlobalSuppressions.cs` (`[assembly: SuppressMessage]`) when it is truly project-wide; the solution-wide `Directory.Build.props` is only for suppressions every project genuinely shares.
+- A file-local compiler or style warning no attribute can target → `#pragma warning disable`/`restore <CODE>` around the minimal span, restored immediately. Last resort.
 
 ## Acceptance
 
