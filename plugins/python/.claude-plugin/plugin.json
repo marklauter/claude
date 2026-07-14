@@ -1,0 +1,14 @@
+{
+  "name": "python",
+  "version": "1.0.0",
+  "description": "Skills for writing Python — pragmatic-functional style, frozen dataclasses, pattern matching, Protocol typing",
+  "author": {
+    "name": "MSL"
+  },
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "skills",
+    "python"
+  ]
+}

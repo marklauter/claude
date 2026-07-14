@@ -1,0 +1,39 @@
+<Project>
+
+	<!--#if (webapi)-->
+	<Sdk Name="Microsoft.NET.Sdk.Web" />
+	<!--#else-->
+	<Sdk Name="Microsoft.NET.Sdk" />
+	<!--#endif-->
+
+	<PropertyGroup>
+		<!--#if (package)-->
+		<IsPackable>true</IsPackable>
+		<PackageId>MSL.$(AssemblyName)</PackageId>
+		<Title>MyProject — TODO: one-line summary of what this package does</Title>
+		<Authors>Mark Lauter</Authors>
+		<Description>TODO: package description.</Description>
+		<Copyright>Copyright (c) 2026 Mark Lauter</Copyright>
+		<PackageProjectUrl>https://github.com/marklauter/MyProject</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/marklauter/MyProject</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>dotnet</PackageTags>
+		<NeutralLanguage>en-US</NeutralLanguage>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<!-- Before `dotnet pack`: add README.md, LICENSE, and an icon, and wire PackageReadmeFile /
+		     PackageLicenseFile / PackageIcon + their <None Pack="true"> items (see the reference packages). -->
+		<!--#else-->
+		<IsPackable>false</IsPackable>
+		<!--#endif-->
+	</PropertyGroup>
+
+	<!--#if (package)-->
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+	<!--#endif-->
+
+</Project>

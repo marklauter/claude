@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Mark Lauter",
+  "classifications": [ "C#", "Solution", "Library", "Web", "MSL" ],
+  "identity": "MSL.CSharp.Solution",
+  "name": "MSL C# solution (analyzer-strict, arch-tested)",
+  "shortName": "msl-csharp",
+  "sourceName": "MyProject",
+  "defaultName": "MyProject",
+  "preferNameDirectory": true,
+  "tags": {
+    "language": "C#"
+  },
+  "symbols": {
+    "type": {
+      "type": "parameter",
+      "datatype": "choice",
+      "description": "The kind of project to scaffold.",
+      "defaultValue": "library",
+      "choices": [
+        {
+          "choice": "library",
+          "description": "In-solution library or app. Not packable; CA1062 off (nullable reference types are the null contract)."
+        },
+        {
+          "choice": "package",
+          "description": "Published NuGet package. Packable, SourceLink, doc-gen; CA1062 on (external callers)."
+        },
+        {
+          "choice": "webapi",
+          "description": "ASP.NET Core web API. PumaScan + security-analyzer block; CA1062 on; not packable."
+        }
+      ]
+    },
+    "library": {
+      "type": "computed",
+      "value": "(type == \"library\")"
+    },
+    "package": {
+      "type": "computed",
+      "value": "(type == \"package\")"
+    },
+    "webapi": {
+      "type": "computed",
+      "value": "(type == \"webapi\")"
+    }
+  },
+  "sources": [
+    {
+      "exclude": [ "**/bin/**", "**/obj/**", "**/*.user" ],
+      "modifiers": [
+        {
+          "condition": "(!webapi)",
+          "exclude": [ "src/MyProject/Program.cs", "src/MyProject/.editorconfig" ]
+        },
+        {
+          "condition": "(webapi)",
+          "exclude": [ "src/MyProject/Class1.cs" ]
+        }
+      ]
+    }
+  ]
+}

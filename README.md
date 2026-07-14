@@ -3,84 +3,55 @@
 
 ![MSL Armory](https://raw.githubusercontent.com/marklauter/claude/main/images/msl.armory.small.png "MSL Armory")
 
-# claude plugin
+# MSL Armory
 
-*Another weapon from the MSL Armory*
+A Claude Code marketplace (`msl-armory`) shipping several small, single-concern plugins of agent-facing skills. Each plugin is one coherent family; install only the ones your repo needs.
 
-A single git repo to maintain Claude Code skills, replacing copies spread across many project repos.
+The Hoplite knowledge graph (MCP server plus its note-taking and journaling skills) lives in its own repo now: [marklauter/hoplite](https://github.com/marklauter/hoplite).
 
-## Install locally
+## Plugins
+
+- `csharp` — writing and scaffolding C# / .NET (ships a `dotnet new` solution template).
+- `python` — writing Python.
+
+`documentation` (prose and project wikis) and `workflow` (findings triage and GitHub issue management) live under `plugins/` but are not yet published to the marketplace — they are being refactored to the self-contained skill pattern and will be re-added when they land.
+
+## Install
 
 From inside Claude Code, with `<repo>` as the absolute path to your clone (the directory holding `.claude-plugin/marketplace.json`):
 
 ```text
 /plugin marketplace add <repo>
-/plugin install skills@msl.armory
+/plugin install csharp@msl-armory
+/plugin install python@msl-armory
 ```
 
-After editing a skill, run `/reload-plugins` to apply.
+Install each plugin you want by name — `<plugin>@msl-armory`. After source changes, run `/plugin uninstall <plugin>@msl-armory` followed by `/plugin install <plugin>@msl-armory` to refresh the cached `SKILL.md` and components.
 
-## Structure
+## Development
+
+Layout — each plugin is self-contained under `plugins/<plugin>/`:
+
+- `plugins/<plugin>/.claude-plugin/plugin.json` — the plugin manifest.
+- `plugins/<plugin>/skills/<skill>/SKILL.md` — skill bodies, one subdirectory per skill.
+- `plugins/<plugin>/skills/<skill>/scripts/` — scripts owned by that skill.
+- `plugins/<plugin>/components/` — markdown fragments for that plugin's skills.
+
+Plugins carry no build step and share nothing across plugin boundaries: a skill inlines its own discipline and references shared canonical docs by plain path.
+
+Running the workflow plugin's tests:
+
+```bash
+bash plugins/workflow/tests/run-tests.sh
+```
+
+Adding a skill: create `plugins/<plugin>/skills/<skill-name>/SKILL.md`, then `/plugin uninstall` + `/plugin install` to refresh the cache.
+
+## Troubleshooting
+
+Claude Code's cache of `SKILL.md` and `components/` only refreshes on `/plugin install`. If the agent loads stale skill prose after a source change, run:
 
 ```text
-.claude-plugin/marketplace.json           # marketplace manifest
-plugins/skills/                           # the "skills" plugin
-  .claude-plugin/plugin.json
-  scripts/                                # shared reviewer scripts
-  tests/                                  # bash test runner + tests for shared scripts
-  skills/<skill-name>/
-    SKILL.md                              # the skill body
-    scripts/                              # optional, skill-owned
-    tests/                                # optional, skill-owned
-docs/
-  notes/                                  # taking-notes output
-  journal/                                # journaling output
+/plugin uninstall <plugin>@msl-armory
+/plugin install <plugin>@msl-armory
 ```
-
-## Adding a skill
-
-1. Create `plugins/skills/skills/<skill-name>/SKILL.md`.
-2. If the skill ships executable behavior, add `scripts/` and `tests/` subdirectories. Tests follow the `*_test.sh` convention documented at the top of `plugins/skills/tests/run-tests.sh`.
-3. `/reload-plugins` in Claude Code to test.
-4. Commit and push.
-
-## Skills and shared tooling
-
-Writers — produce durable artifacts:
-
-- `writing-csharp` — C# and .NET; type-driven design, immutability, Result-based error handling.
-- `writing-prose` — foundation for skills that produce prose artifacts; the editorial spine other writer skills compose with.
-- `writing-wiki` — pages in a software-project wiki; loads alongside `writing-prose`.
-- `taking-notes` — atomic wiki pages under `docs/notes/`, each representing the current state of an idea.
-- `journaling` — dated, append-only entries under `docs/journal/`.
-
-Reviewers — surface findings under `.findings/`:
-
-- `reviewing-csharp`, `reviewing-prose`, `reviewing-wiki` — pre-commit review of local diffs.
-- `triaging-findings` — walks `.findings/` in severity order; the steward decides each disposition.
-
-GitHub:
-
-- `managing-github-issues` — list, search, dedupe, file, triage, comment.
-
-Shared scripts at `plugins/skills/scripts/` — the writer and readers over `.findings/`:
-
-- `report-finding.sh` — writes a `.findings/<slug>.md` with the canonical head-field shape.
-- `list-findings.sh`, `query.sh`, `summarize.sh` — read the head fields; reviewer skills and `triaging-findings` invoke these instead of enumerating the directory.
-- `_lib.sh` — sourced helpers for head-field parsing and repo-anchored `.findings/` resolution.
-
-Bash test runner at `plugins/skills/tests/run-tests.sh`:
-
-- Discovers `*_test.sh` files anywhere under the plugin and runs each `test_*` function in a fresh tmpdir under `set -e`.
-- Ships an assertion library (`assert_equal`, `assert_contains`, `assert_match`, `assert_exit_code`, `assert_file_exists`, ...) documented inline at the top of the file.
-
-## Publishing to GitHub
-
-Push this repo to GitHub, then update the marketplace source in consumers:
-
-```text
-/plugin marketplace remove msl.armory
-/plugin marketplace add <github-user>/<repo-name>
-```
-
-No restructuring needed.
