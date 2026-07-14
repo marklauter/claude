@@ -1,0 +1,26 @@
+name: version-bump-check
+
+# Fail a PR that edits a plugin without bumping its version. The cache is keyed
+# by version, so an unbumped edit never reaches installs. The guard reminds;
+# the author/agent chooses the semver size.
+
+on:
+  pull_request:
+    paths:
+      - 'plugins/**'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Check plugin version bumps
+        run: >
+          python .github/scripts/check_version_bumps.py
+          "${{ github.event.pull_request.base.sha }}"
+          "${{ github.event.pull_request.head.sha }}"
