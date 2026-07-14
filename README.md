@@ -11,10 +11,10 @@ The Hoplite knowledge graph (MCP server plus its note-taking and journaling skil
 
 ## Plugins
 
-- `documentation` — writing and reviewing markdown prose and project wikis.
 - `csharp` — writing and scaffolding C# / .NET (ships a `dotnet new` solution template).
 - `python` — writing Python.
-- `workflow` — findings triage and GitHub issue management.
+
+`documentation` (prose and project wikis) and `workflow` (findings triage and GitHub issue management) live under `plugins/` but are not yet published to the marketplace — they are being refactored to the self-contained skill pattern and will be re-added when they land.
 
 ## Install
 
@@ -22,8 +22,8 @@ From inside Claude Code, with `<repo>` as the absolute path to your clone (the d
 
 ```text
 /plugin marketplace add <repo>
-/plugin install documentation@msl-armory
 /plugin install csharp@msl-armory
+/plugin install python@msl-armory
 ```
 
 Install each plugin you want by name — `<plugin>@msl-armory`. After source changes, run `/plugin uninstall <plugin>@msl-armory` followed by `/plugin install <plugin>@msl-armory` to refresh the cached `SKILL.md` and components.
