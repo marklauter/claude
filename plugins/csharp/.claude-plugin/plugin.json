@@ -1,6 +1,6 @@
 {
   "name": "csharp",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Skills for scaffolding and writing C# / .NET — a dotnet-new solution template plus a functional core modeled as a DDD domain, type-driven design, and Result-based error handling",
   "author": {
     "name": "MSL"
