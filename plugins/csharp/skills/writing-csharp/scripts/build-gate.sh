@@ -15,19 +15,41 @@
 #   build-gate.sh <build-target> <test-target>     solution-wide format; build scoped; test scoped
 #                                             (use for non-paired test targets)
 #
-# Targets accept anything `dotnet` accepts: a project name, a .csproj path, or a .sln path.
+#   --filter <expr>   forward an xUnit trait filter to every dotnet test run, e.g.
+#                     --filter "Category=Unit"   or   --filter "Category!=Integration"
+#                     or   --filter "FullyQualifiedName~Parser". Composes with any target.
+#
+# Targets accept anything `dotnet` accepts: a project name, a .csproj path, or a .slnx/.sln path.
 
 set -eo pipefail
 
-case "${1:-}" in
-    --help|-h)
-        awk 'NR==1 {next} /^#/ {sub(/^#/, ""); sub(/^ /, ""); print; next} {exit}' "${BASH_SOURCE[0]}"
-        exit 0
-        ;;
-esac
+FILTER=""
+positional=()
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --help|-h)
+            awk 'NR==1 {next} /^#/ {sub(/^#/, ""); sub(/^ /, ""); print; next} {exit}' "${BASH_SOURCE[0]}"
+            exit 0
+            ;;
+        --filter|-f)
+            [ -n "${2:-}" ] || { echo "build-gate: --filter needs an expression" >&2; exit 2; }
+            FILTER="$2"; shift 2
+            ;;
+        --filter=*) FILTER="${1#--filter=}"; shift ;;
+        -f=*)       FILTER="${1#-f=}"; shift ;;
+        --)         shift; while [ $# -gt 0 ]; do positional+=("$1"); shift; done ;;
+        *)          positional+=("$1"); shift ;;
+    esac
+done
+set -- "${positional[@]}"
 
 ARG1="${1:-}"
 ARG2="${2:-}"
+
+# An xUnit trait filter, forwarded to each dotnet test call when set.
+filter_args=()
+[ -n "$FILTER" ] && filter_args=(--filter "$FILTER")
 
 # Preflight: dotnet format runs solution-wide and auto-discovers a workspace at CWD.
 # Bail with a clear message instead of letting dotnet emit a stack trace.
@@ -60,12 +82,12 @@ run_step "format (solution-wide)" dotnet format --verify-no-changes --severity i
 
 if [ -z "$ARG1" ]; then
     run_step "build (solution-wide)" dotnet build --nologo --verbosity quiet
-    test_step "test (solution-wide)" dotnet test --nologo --verbosity quiet --logger "console;verbosity=minimal"
+    test_step "test (solution-wide)" dotnet test --nologo --verbosity quiet --logger "console;verbosity=minimal" "${filter_args[@]}"
 elif [ -z "$ARG2" ]; then
-    test_step "test $ARG1" dotnet test "$ARG1" --nologo --verbosity quiet --logger "console;verbosity=minimal"
+    test_step "test $ARG1" dotnet test "$ARG1" --nologo --verbosity quiet --logger "console;verbosity=minimal" "${filter_args[@]}"
 else
     run_step "build $ARG1" dotnet build "$ARG1" --nologo --verbosity quiet
-    test_step "test $ARG2" dotnet test "$ARG2" --nologo --verbosity quiet --logger "console;verbosity=minimal"
+    test_step "test $ARG2" dotnet test "$ARG2" --nologo --verbosity quiet --logger "console;verbosity=minimal" "${filter_args[@]}"
 fi
 
 echo "==> green"

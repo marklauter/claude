@@ -42,6 +42,7 @@ Validate with the canonical script at `${CLAUDE_PLUGIN_ROOT}/skills/writing-csha
 - `build-gate.sh` — solution-wide format, build, test.
 - `build-gate.sh <test-target>` — solution-wide format, then scoped test (build is implicit in `dotnet test`).
 - `build-gate.sh <build-target> <test-target>` — scoped build and test when the pairing isn't the conventional `<X>.Tests` ↔ `<X>`.
+- `build-gate.sh --filter <expr>` — forward an xUnit trait filter to every test run: `--filter "Category=Unit"`, `--filter "Category!=Integration"`, `--filter "FullyQualifiedName~Parser"`. Composes with any target. Tag classes with `[Trait("Category", "…")]` to select them.
 
 Each target is anything `dotnet` accepts — project name, `.csproj`, or `.slnx`.
 

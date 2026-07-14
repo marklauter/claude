@@ -12,7 +12,7 @@ The Hoplite knowledge graph (MCP server plus its note-taking and journaling skil
 ## Plugins
 
 - `documentation` — writing and reviewing markdown prose and project wikis.
-- `csharp` — writing and reviewing C# / .NET.
+- `csharp` — writing and scaffolding C# / .NET (ships a `dotnet new` solution template).
 - `python` — writing Python.
 - `workflow` — findings triage and GitHub issue management.
 
