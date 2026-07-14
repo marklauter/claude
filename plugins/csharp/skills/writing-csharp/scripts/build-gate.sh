@@ -19,7 +19,8 @@
 #                     --filter "Category=Unit"   or   --filter "Category!=Integration"
 #                     or   --filter "FullyQualifiedName~Parser". Composes with any target.
 #
-# Targets accept anything `dotnet` accepts: a project name, a .csproj path, or a .slnx/.sln path.
+# Targets accept a project name (resolved to its .csproj under the working tree),
+# a .csproj path, or a .slnx/.sln path. A bare name must resolve to exactly one project.
 
 set -eo pipefail
 
@@ -59,6 +60,33 @@ if ! compgen -G "*.sln*" > /dev/null && ! compgen -G "*.csproj" > /dev/null; the
     exit 2
 fi
 
+# Resolve a target to a path dotnet accepts. An existing path (file or directory) is
+# used verbatim; a bare name is globbed to its project file and must match exactly one.
+resolve_target() {
+    local target="$1"
+    if [ -e "$target" ]; then
+        printf '%s\n' "$target"
+        return 0
+    fi
+    local name="$target"
+    case "$target" in
+        *.csproj|*.sln|*.slnx|*.slnf) ;;   # already carries an extension
+        *) name="$target.csproj" ;;
+    esac
+    local matches=()
+    while IFS= read -r m; do matches+=("$m"); done < <(find . -type f -name "$name" 2>/dev/null)
+    case ${#matches[@]} in
+        1) printf '%s\n' "${matches[0]}" ;;
+        0) echo "build-gate: no project matching '$target' (looked for $name under $PWD)" >&2
+           echo "  pass a .csproj/.slnx path, or a name that resolves to exactly one project." >&2
+           return 2 ;;
+        *) echo "build-gate: '$target' is ambiguous — $name matches multiple files:" >&2
+           printf '    %s\n' "${matches[@]}" >&2
+           echo "  pass an explicit path to disambiguate." >&2
+           return 2 ;;
+    esac
+}
+
 run_step() {
     local label="$1"
     shift
@@ -84,10 +112,13 @@ if [ -z "$ARG1" ]; then
     run_step "build (solution-wide)" dotnet build --nologo --verbosity quiet
     test_step "test (solution-wide)" dotnet test --nologo --verbosity quiet --logger "console;verbosity=minimal" "${filter_args[@]}"
 elif [ -z "$ARG2" ]; then
-    test_step "test $ARG1" dotnet test "$ARG1" --nologo --verbosity quiet --logger "console;verbosity=minimal" "${filter_args[@]}"
+    T1=$(resolve_target "$ARG1") || exit $?
+    test_step "test $T1" dotnet test "$T1" --nologo --verbosity quiet --logger "console;verbosity=minimal" "${filter_args[@]}"
 else
-    run_step "build $ARG1" dotnet build "$ARG1" --nologo --verbosity quiet
-    test_step "test $ARG2" dotnet test "$ARG2" --nologo --verbosity quiet --logger "console;verbosity=minimal" "${filter_args[@]}"
+    T1=$(resolve_target "$ARG1") || exit $?
+    T2=$(resolve_target "$ARG2") || exit $?
+    run_step "build $T1" dotnet build "$T1" --nologo --verbosity quiet
+    test_step "test $T2" dotnet test "$T2" --nologo --verbosity quiet --logger "console;verbosity=minimal" "${filter_args[@]}"
 fi
 
 echo "==> green"

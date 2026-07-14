@@ -47,7 +47,7 @@ Validate with the canonical script at `${CLAUDE_PLUGIN_ROOT}/skills/writing-csha
 - `build-gate.sh <build-target> <test-target>` — scoped build and test when the pairing isn't the conventional `<X>.Tests` ↔ `<X>`.
 - `build-gate.sh --filter <expr>` — forward an xUnit trait filter to every test run: `--filter "Category=Unit"`, `--filter "Category!=Integration"`, `--filter "FullyQualifiedName~Parser"`. Composes with any target. Tag classes with `[Trait("Category", "…")]` to select them.
 
-Each target is anything `dotnet` accepts — project name, `.csproj`, or `.slnx`.
+Each target is a project name (resolved to its `.csproj` under the working tree, and must match exactly one), a `.csproj` path, or a `.slnx`/`.sln` path.
 
 When a gate fires, fix the cause; suppression is the last resort (see below). To clear a format violation, run a *scoped* `dotnet format` (`--diagnostics <ID> --include <path>`, or a `whitespace`/`style`/`analyzers` subcommand) — never bare `dotnet format`. Exclude from coverage only generated or trivial code, with a comment naming why; hand-written logic is tested.
 
