@@ -53,9 +53,13 @@ When a gate fires, fix the cause; suppression is the last resort (see below). To
 
 ## Suppression
 
-When to suppress: only as a last resort, after fixing the cause fails and the diagnostic is a genuine false positive or a deliberate, justified deviation from a rule — never to quiet a real defect. Every suppression states why in its `Justification` or comment; an error, not merely a warning, carries a tracking ticket on top of the justification.
+### When to suppress
 
-How to suppress — reach for the narrowest, most structured mechanism the suppression's true scope allows:
+Only as a last resort, after fixing the cause fails and the diagnostic is a genuine false positive or a deliberate, justified deviation from a rule — never to quiet a real defect. Every suppression states why in its `Justification` or comment; an error, not merely a warning, carries a tracking ticket on top of the justification.
+
+### How to suppress
+
+Reach for the narrowest, most structured mechanism the suppression's true scope allows:
 
 - One member or type → the attribute. `[SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "…")]` on the declaration the diagnostic fires on. First choice: scoped to a single site and self-documenting.
 - A rule that fights a codebase-wide convention → `<NoWarn>`, at the narrowest level matching its scope. Append to `$(NoWarn)` (never overwrite it), one `<!-- CODE short-desc : why -->` comment per code. Gate test-only carve-outs behind the test-project `Condition` so a test suppression never loosens production. A project-specific suppression stays in that project's `.csproj` or its `GlobalSuppressions.cs` (`[assembly: SuppressMessage]`) when it is truly project-wide; the solution-wide `Directory.Build.props` is only for suppressions every project genuinely shares.
