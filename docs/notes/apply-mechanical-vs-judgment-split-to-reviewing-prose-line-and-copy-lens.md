@@ -8,7 +8,7 @@ aliases: []
 
 ## Observation
 
-Reviewing-documentation has six lenses; two of them — Line and Copy — contain many signals that are mechanical and could be encoded in a prose linter:
+Reviewing-prose has six lenses; two of them — Line and Copy — contain many signals that are mechanical and could be encoded in a prose linter:
 
 **Line lens (mechanical candidates):**
 - Hedges: *might*, *perhaps*, *could be*, *it's worth noting*, *might want to*.

@@ -1,36 +1,27 @@
 ---
 title: Write the writing-architecture skill
-summary: Architectural concerns scoped out of writing-csharp deserve their own skill — persistence ignorance, layer boundaries, bounded contexts, adapter patterns.
-tags: [todo, skills, csharp, architecture]
+summary: A language-agnostic architecture skill — bounded contexts, hexagonal boundaries, dependency direction, integration patterns — sitting beside the per-language writing skills.
+tags: [note, skills, architecture]
 created: 2026-05-25
-aliases: []
+status: evolving
 ---
 
-## Observation
+## Idea
 
-Pre-draft rules captured in memory (originally at `project_writing_architecture_rules.md`, now consolidated here):
+Architecture-scale decisions are a separate concern from idiomatic language use: the architect (or the agent) devises the plan; the developer follows it. That argues for a self-contained `writing-architecture` skill distinct from the per-language `writing-*` skills.
 
-- **Persistence ignorance** is in `writing-csharp` Philosophy ("the domain doesn't know how it's stored") because philosophy is language-agnostic and applies everywhere. The deeper architectural treatment belongs in `writing-architecture`: bounded contexts, layer boundaries, mapper/DTO conventions, where adapters live, repository patterns. In `writing-csharp` Guidance, only the C#-specific surface rule was included: no persistence or serialization attributes on domain types.
+`writing-csharp` already carries the C#-facing surface of this in its Design section — model the domain not the database, bounded contexts, aggregates, an immutable core, effects at the edge through ports and adapters. `writing-architecture` would be the language-agnostic elaboration a `writing-*` skill can assume without restating:
 
-- Mark's framing: the architect (and possibly the agent) devises the plan; the developer follows it. Architecture-scale decisions are a separate skill from idiomatic language use.
-
-## Interpretation
-
-Likely scope for `writing-architecture`:
-
-- Persistence ignorance fully elaborated — adapter/port boundaries, mapper/DTO conventions, repository placement.
-- Dependency direction — clean / hexagonal / onion patterns.
+- Persistence ignorance fully drawn out — port/adapter boundaries, mapper/DTO conventions, repository placement.
+- Dependency direction — hexagonal / onion, the dependency rule.
 - Bounded contexts and anti-corruption layers.
-- Integration patterns (sync vs async, choreography vs orchestration).
-- Deployment topology where it shapes the code (service boundaries, shared databases).
+- Integration patterns — sync vs async, choreography vs orchestration.
+- Deployment topology where it shapes the code — service boundaries, shared databases.
 
-Cross-references:
+## Shape
 
-- `writing-csharp` for C#-specific manifestations (no `[Table]` on domain types, etc.) so the two skills compose without duplication.
-- `reviewing-csharp` and a future `reviewing-architecture` skill would judge against this rubric.
+Self-contained, per `how-to-build-skills.md`: comprehended architecture philosophy reduced to trigger→action, its discipline inlined — not composed on another skill, no shared fragments. The per-language skills reference it by concept, not by loading it. Scope it to what `writing-csharp`'s Design section does *not* already cover, so the two don't duplicate.
 
-## Next
+## Open
 
-- Draft the skill; if it covers prose artifacts, compose on `writing-prose` and declare a `## Rhetorical context` section per the foundation contract. Body section shape fits the artifact (architecture rules, patterns, anti-patterns).
-- Decide whether a `reviewing-architecture` skill ships at the same time (architecture findings would slot into the existing `.findings/` shape with a new `--type architecture` and possibly a lens vocabulary).
-- After it ships, the memory `project_writing_architecture_rules.md` can be deleted — its content lives here now and the skill itself becomes the authoritative source.
+Whether it earns its own skill or stays folded into each `writing-*` skill's Design section. `writing-csharp` absorbing the DDD core weakens the standalone case; decide once a second language skill (`writing-python`) needs the same architecture rules and would otherwise restate them.
