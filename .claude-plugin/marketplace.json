@@ -17,7 +17,7 @@
     },
     {
       "name": "csharp",
-      "description": "Skills for writing and reviewing C# / .NET — type-driven design, immutability, Result-based error handling",
+      "description": "Skills for scaffolding and writing C# / .NET — a dotnet-new solution template plus a functional core modeled as a DDD domain, type-driven design, and Result-based error handling",
       "author": {
         "name": "MSL"
       },
