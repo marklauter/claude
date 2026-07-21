@@ -51,6 +51,17 @@ Each target is a project name (resolved to its `.csproj` under the working tree,
 
 When a gate fires, fix the cause; suppression is the last resort (see below). To clear a format violation, run a *scoped* `dotnet format` (`--diagnostics <ID> --include <path>`, or a `whitespace`/`style`/`analyzers` subcommand) — never bare `dotnet format`. Exclude from coverage only generated or trivial code, with a comment naming why; hand-written logic is tested.
 
+## Testing
+
+Tests pin the observable contract of code you own. Coverage is the signal, not the goal — zero coverage is zero test quality, but 100% coverage is not 100% test quality; the score rises as a side effect of effective tests. The ratchet is a regression gate: no new code lands without new tests.
+
+- Cover the unit's contract whole: every functional case, edge case, and failure case, asserted through the public surface.
+- Don't test what you don't own. Never write a test proving a framework or library does its job — that EF Core saves, that `System.Text.Json` round-trips — that's their contract, not your logic. Don't mock what you don't own either: wrap the foreign type in a port and mock the port.
+- Don't test outside the contract. Asserting more than the contract promises — call counts, exact message wording, internal ordering — manufactures false failures on refactor. Assert what the contract promises, nothing more.
+- A bug fix starts red. Write the test that reproduces the defect, prove it fails, then fix; the passing test is the bug pinned against regression. A fix without the red test isn't pinned.
+- Flaky is a defect. A test whose verdict depends on anything other than the code under test — wall clock, network, filesystem state, execution order, unseeded randomness, sleeps — is broken; fix it now. Rerunning until green is suppression without the justification.
+- Follow the cost gradient: the pure core gets many cheap data-in/data-out tests; ports get fakes; the real substrate gets thin integration tests tagged `[Trait("Category", "Integration")]`.
+
 ## Suppression
 
 ### When to suppress
