@@ -7,7 +7,7 @@ description: Use when writing or refactoring C# / .NET. A pure functional core m
 
 Write a functional core and model it as a domain: pure and immutable, effects pushed to the edge, expressed with `Result`/`Either`/`IValue` types, Evans' aggregates, and bounded contexts. Pure functions are referentially transparent, so a call reduces to its value and reasoning stays local. Immutability makes the core thread-safe by construction.
 
-Each rule below is a default; deviating takes a reason written at the deviation site.
+Each rule below is a default; deviating requires a reason written at the deviation site.
 
 ## Design
 
