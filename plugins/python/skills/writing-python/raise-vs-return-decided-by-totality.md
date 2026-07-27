@@ -5,7 +5,7 @@ tags: [note, python, design, errors, functional]
 status: evolving
 ---
 
-Model every operation as a total function and ask one structural question: is this outcome in the function's codomain, or is it the substrate the function assumes failing? That question — not "is it expected," not "can the caller recover" — decides whether you return a value (`T | None` / `Result[T, E]`) or raise.
+Model every operation as a total function and ask one structural question: is this outcome in the function's codomain, or is it the substrate the function assumes failing? That question — not "is it expected," not "can the caller recover" — decides whether you return a value (`T | None`, or a union of sibling variants) or raise.
 
 ## Why the usual framings can't draw the line
 
@@ -19,7 +19,7 @@ These questions produce endless case-by-case argument. Python, like most languag
 
 ## The line: codomain vs. substrate
 
-- In the codomain → return a value (`T | None` for plain absence, `Result[T, E]` where the error vocabulary is richer). These are the *modeled* outcomes: success and every failure the operation's own logic produces — a parse rejecting input, a withdrawal exceeding balance, a lookup finding nothing. The function is total: every input maps to a modeled outcome, nothing escapes out-of-band. `match` to handle; don't reach past the container blindly.
+- In the codomain → return a value (`T | None` for plain absence, or a union of sibling frozen dataclasses where the failure carries context). These are the *modeled* outcomes: success and every failure the operation's own logic produces — a parse rejecting input, a withdrawal exceeding balance, a lookup finding nothing. The function is total: every input maps to a modeled outcome, nothing escapes out-of-band. `match` to handle, and close the fallthrough with `assert_never` so a new variant fails the type check.
 - Outside the codomain → raise. Not an outcome of the operation — the machinery it *assumes* (memory, network, disk, configuration, correct calling code) failing. An exception is the honest signal precisely because the event is not part of the function's total mapping.
 
 An exception is out-of-band and lies about totality; a returned value is in-band and, under `pyright` strict with exhaustive `match`, forces every outcome to be handled. That — not "you can't branch on exceptions" — is why modeled outcomes belong in the return type.
@@ -55,7 +55,7 @@ Domain is relative to layer. Within `httpx`'s own internals, the socket was the 
 
 ## Doing this in Python
 
-Python gives you exceptions as the default, so the discipline is to treat the domain as value-first: the codomain speaks in `T | None` / `Result[T, E]` / sum-type variants, and the exception model is quarantined to two edges — the infrastructure boundary (transient/permanent faults) and the bug channel (guards). Exceptions never carry a modeled domain outcome, and every `raise` inside an `except` keeps the chain with `from`.
+Python gives you exceptions as the default, so the discipline is to treat the domain as value-first: the codomain speaks in `T | None` and sum-type variants, and the exception model is quarantined to two edges — the infrastructure boundary (transient/permanent faults) and the bug channel (guards). Exceptions never carry a modeled domain outcome, and every `raise` inside an `except` keeps the chain with `from`.
 
 ## The decision, in one line
 
