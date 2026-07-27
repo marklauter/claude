@@ -4,13 +4,18 @@
 #
 # Output discipline:
 #   - format / lint / type: silent on success, captured output on failure.
-#   - test: emits the pytest summary line(s) on success, full captured output on failure.
+#   - test: emits the pytest summary line(s) and the coverage TOTAL row on success,
+#           full captured output on failure.
 #
 # Usage:
 #   build-gate.sh                            project-wide: format, lint, type, test
 #   build-gate.sh <pytest-target>            project-wide format / lint / type; test scoped
 #
 # pytest targets accept anything pytest accepts: a path, a node id, or a -k expression.
+#
+# Coverage: the project-wide run enforces the ratchet configured in pyproject's
+# addopts. A scoped run passes --no-cov, because measuring a subset of the suite
+# against a project-wide threshold fails for no reason.
 
 set -eo pipefail
 
@@ -52,7 +57,7 @@ test_step() {
     echo "==> $label"
     local output
     output=$("$@" 2>&1) || { local code=$?; echo "$output"; exit $code; }
-    echo "$output" | grep -E "^=+.*(passed|failed|skipped|error)" | tail -5 || true
+    echo "$output" | grep -E "^(TOTAL|=+.*(passed|failed|skipped|error))" | tail -5 || true
 }
 
 run_step "format (ruff)" ruff format --check
@@ -62,7 +67,9 @@ run_step "types (pyright)" pyright
 if [ -z "$ARG1" ]; then
     test_step "test" pytest
 else
-    test_step "test $ARG1" pytest "$ARG1"
+    # --no-cov: the ratchet in pyproject's addopts measures the whole project, so a
+    # subset of the suite would trip it. The project-wide run is what enforces it.
+    test_step "test $ARG1" pytest --no-cov "$ARG1"
 fi
 
 echo "==> green"
