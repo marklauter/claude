@@ -1,6 +1,6 @@
 {
   "name": "python",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Skills for writing Python — a pragmatic-functional core modeled as a DDD domain, frozen-dataclass records, sum types, Protocol ports, and Result-based error handling",
   "author": {
     "name": "MSL"
