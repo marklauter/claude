@@ -14,6 +14,9 @@ namespace Architecture.Testing;
 /// flat namespace, sealed concretes, no public instance state, no public nested types, Async suffix.
 /// Each test assembly derives a sealed class, points <see cref="TargetAssembly"/> at its system under
 /// test, names its <see cref="RootNamespace"/>, and adds any assembly-specific rules as extra <c>[Fact]</c>s.
+/// Every rule here is <see langword="virtual"/>: an assembly with a justified deviation overrides the one
+/// rule and narrows it — exempting the deviating types by name so the rule still catches everything else —
+/// rather than suppressing it wholesale. State the justification in the override's doc comment.
 /// </summary>
 public abstract class ArchitectureTestsBase
 {
@@ -31,7 +34,7 @@ public abstract class ArchitectureTestsBase
         Models.GetOrAdd(TargetAssembly, static assembly => new ArchLoader().LoadAssemblies(assembly).Build());
 
     [Fact]
-    public void AllTypesResideInRootNamespace() =>
+    public virtual void AllTypesResideInRootNamespace() =>
         Verify(Types()
             .That()
             .DoNotHaveNameContaining("<") // exclude compiler-generated closures / async state machines
@@ -42,7 +45,7 @@ public abstract class ArchitectureTestsBase
             .WithoutRequiringPositiveResults());
 
     [Fact]
-    public void ConcreteClassesAreSealed() =>
+    public virtual void ConcreteClassesAreSealed() =>
         Verify(Classes()
             .That()
             .AreNotAbstract() // C# 'static' compiles to 'abstract sealed' — this also excludes static factories
@@ -54,19 +57,21 @@ public abstract class ArchitectureTestsBase
             .WithoutRequiringPositiveResults());
 
     [Fact]
-    public void InstanceFieldsAreNotPublic() =>
+    public virtual void InstanceFieldsAreNotPublic() =>
         Verify(FieldMembers()
             .That()
             .AreNotStatic() // const / static readonly may be public; instance state must not be.
             .And()
             .DoNotHaveNameContaining("<") // exclude compiler-generated backing fields
+            .And()
+            .DoNotHaveName("value__") // every enum carries a public instance field of this name; it is the enum, not state
             .Should()
             .NotBePublic()
             .Because("writing-csharp: immutable-by-default; no public mutable instance state.")
             .WithoutRequiringPositiveResults());
 
     [Fact]
-    public void PublicTypesAreNotNested() =>
+    public virtual void PublicTypesAreNotNested() =>
         Verify(Types()
             .That()
             .AreNested()
@@ -79,7 +84,7 @@ public abstract class ArchitectureTestsBase
             .WithoutRequiringPositiveResults());
 
     [Fact]
-    public void AsyncMethodsHaveAsyncSuffix() =>
+    public virtual void AsyncMethodsHaveAsyncSuffix() =>
         Verify(MethodMembers()
             .That()
             // A member's FullName begins with its return type; match Task / Task<T> / ValueTask / ValueTask<T>.
