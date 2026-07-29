@@ -1,6 +1,5 @@
 {
   "name": "workflow",
-  "version": "0.1.0",
   "description": "Skills for development workflow — findings triage and GitHub issue management",
   "author": {
     "name": "MSL"
